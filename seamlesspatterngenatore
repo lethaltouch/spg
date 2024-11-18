@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Pattern Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        svg {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Pattern Generator</h1>
+    <div class="controls">
+        <label for="shape">Shape:</label>
+        <select id="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="line">Line</option>
+        </select>
+        <label for="density">Density:</label>
+        <input type="range" id="density" min="10" max="200" value="50">
+        <label for="color">Color:</label>
+        <input type="color" id="color" value="#ff6347">
+        <label for="layout">Layout:</label>
+        <select id="layout">
+            <option value="random">Random</option>
+            <option value="grid">Grid</option>
+        </select>
+        <button onclick="generatePattern()">Generate</button>
+    </div>
+    <svg id="patternCanvas" width="600" height="400" xmlns="http://www.w3.org/2000/svg"></svg>
+
+    <script>
+        function generatePattern() {
+            const svg = document.getElementById('patternCanvas');
+            const shape = document.getElementById('shape').value;
+            const density = parseInt(document.getElementById('density').value);
+            const color = document.getElementById('color').value;
+            const layout = document.getElementById('layout').value;
+
+            const width = svg.clientWidth;
+            const height = svg.clientHeight;
+
+            // Clear existing SVG content
+            svg.innerHTML = '';
+
+            // Calculate grid size if layout is "grid"
+            const gridSize = Math.sqrt(density); // Approximate number of rows and columns
+            const gridCellWidth = width / gridSize;
+            const gridCellHeight = height / gridSize;
+
+            // Generate shapes
+            for (let i = 0; i < density; i++) {
+                let element;
+                let x, y;
+
+                if (layout === "random") {
+                    // Random positions
+                    x = Math.random() * width;
+                    y = Math.random() * height;
+                } else if (layout === "grid") {
+                    // Grid positions
+                    const row = Math.floor(i / gridSize);
+                    const col = i % gridSize;
+                    x = col * gridCellWidth + gridCellWidth / 2;
+                    y = row * gridCellHeight + gridCellHeight / 2;
+                }
+
+                if (shape === 'circle') {
+                    element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    element.setAttribute("cx", x);
+                    element.setAttribute("cy", y);
+                    element.setAttribute("r", Math.random() * 10 + 5); // Random radius
+                } else if (shape === 'square') {
+                    element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    element.setAttribute("x", x - 10);
+                    element.setAttribute("y", y - 10);
+                    element.setAttribute("width", 20);
+                    element.setAttribute("height", 20);
+                } else if (shape === 'line') {
+                    element = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    element.setAttribute("x1", x);
+                    element.setAttribute("y1", y);
+                    element.setAttribute("x2", x + Math.random() * 20);
+                    element.setAttribute("y2", y + Math.random() * 20);
+                    element.setAttribute("stroke-width", Math.random() * 2 + 1);
+                }
+
+                element.setAttribute("fill", shape === 'line' ? 'none' : color);
+                element.setAttribute("stroke", color);
+                svg.appendChild(element);
+            }
+        }
+    </script>
+</body>
+</html>
